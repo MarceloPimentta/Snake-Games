@@ -1,9 +1,28 @@
+// Responsive canvas sizing and touch controls for mobile
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-const gridSize = 20;
-const tileCount = Math.floor(canvas.width / gridSize);
+const playerNameContainer = document.getElementById('playerNameContainer');
+const playerNameInput = document.getElementById('playerNameInput');
+const confirmNameButton = document.getElementById('confirmNameButton');
 
+const startButton = document.getElementById('startButton');
+const restartButton = document.getElementById('restartButton');
+const scoreContainer = document.getElementById('scoreContainer');
+const scoreDisplay = document.getElementById('score');
+
+const leaderboardContainer = document.getElementById('leaderboardContainer');
+const leaderboardList = document.getElementById('leaderboardList');
+
+const touchControls = document.getElementById('touchControls');
+const upButton = document.getElementById('upButton');
+const downButton = document.getElementById('downButton');
+const leftButton = document.getElementById('leftButton');
+const rightButton = document.getElementById('rightButton');
+
+let gridSize = 20;
+let tileCount;
 let snake = [];
 let velocity = { x: 0, y: 0 };
 let food = { x: 0, y: 0 };
@@ -12,22 +31,19 @@ let gameOver = false;
 let score = 0;
 let gameInterval = null;
 
-const startButton = document.getElementById('startButton');
-const restartButton = document.getElementById('restartButton');
-const scoreContainer = document.getElementById('scoreContainer');
-const scoreDisplay = document.getElementById('score');
-
-const playerNameContainer = document.getElementById('playerNameContainer');
-const playerNameInput = document.getElementById('playerNameInput');
-const confirmNameButton = document.getElementById('confirmNameButton');
-
-const leaderboardContainer = document.getElementById('leaderboardContainer');
-const leaderboardList = document.getElementById('leaderboardList');
-
 let playerName = '';
 
+function resizeCanvas() {
+    const maxWidth = window.innerWidth * 0.9;
+    const size = Math.floor(maxWidth / gridSize) * gridSize;
+    canvas.width = size;
+    canvas.height = size;
+    tileCount = size / gridSize;
+}
+
 function initGame() {
-    snake = [{ x: 10, y: 10 }];
+    resizeCanvas();
+    snake = [{ x: Math.floor(tileCount / 2), y: Math.floor(tileCount / 2) }];
     velocity = { x: 1, y: 0 };
     tailLength = 1;
     gameOver = false;
@@ -43,8 +59,9 @@ function gameLoop() {
         restartButton.style.display = 'inline-block';
         scoreContainer.style.display = 'block';
         ctx.fillStyle = 'red';
-        ctx.font = '30px Arial';
-        ctx.fillText(`Game Over! Pontuação: ${score}`, canvas.width / 8, canvas.height / 2);
+        ctx.font = `${canvas.width / 12}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.fillText(`Game Over! Pontuação: ${score}`, canvas.width / 2, canvas.height / 2);
         saveScore();
         displayLeaderboard();
         return;
@@ -141,6 +158,12 @@ confirmNameButton.addEventListener('click', () => {
     canvas.style.display = 'block';
     document.getElementById('controls').style.display = 'flex';
     leaderboardContainer.style.display = 'block';
+
+    // Show touch controls on mobile
+    if (/Mobi|Android/i.test(navigator.userAgent)) {
+        touchControls.style.display = 'flex';
+    }
+
     displayLeaderboard();
 });
 
@@ -157,6 +180,28 @@ restartButton.addEventListener('click', () => {
     restartButton.style.display = 'none';
     scoreContainer.style.display = 'block';
     gameInterval = setInterval(gameLoop, 100);
+});
+
+// Touch control event listeners
+upButton.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (velocity.y === 1) return;
+    velocity = { x: 0, y: -1 };
+});
+downButton.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (velocity.y === -1) return;
+    velocity = { x: 0, y: 1 };
+});
+leftButton.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (velocity.x === 1) return;
+    velocity = { x: -1, y: 0 };
+});
+rightButton.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (velocity.x === -1) return;
+    velocity = { x: 1, y: 0 };
 });
 
 function saveScore() {
@@ -177,3 +222,10 @@ function displayLeaderboard() {
         leaderboardList.appendChild(li);
     });
 }
+
+window.addEventListener('resize', () => {
+    if (!gameOver) {
+        resizeCanvas();
+        draw();
+    }
+});
