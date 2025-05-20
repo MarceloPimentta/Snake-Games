@@ -1,5 +1,3 @@
-// Responsive canvas sizing and touch controls for mobile
-
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -35,7 +33,12 @@ let playerName = '';
 
 function resizeCanvas() {
     const maxWidth = window.innerWidth * 0.9;
-    const size = Math.floor(maxWidth / gridSize) * gridSize;
+    // Ensure minimum size for usability and max size for large screens
+    const minSize = 200;
+    const maxSize = 400;
+    let size = Math.floor(maxWidth / gridSize) * gridSize;
+    if (size < minSize) size = minSize;
+    if (size > maxSize) size = maxSize;
     canvas.width = size;
     canvas.height = size;
     tileCount = size / gridSize;
@@ -44,7 +47,7 @@ function resizeCanvas() {
 function initGame() {
     resizeCanvas();
     snake = [{ x: Math.floor(tileCount / 2), y: Math.floor(tileCount / 2) }];
-    velocity = { x: 1, y: 0 };
+    velocity = { x: 1, y: 0 }; // Start moving right by default
     tailLength = 1;
     gameOver = false;
     score = 0;
@@ -182,7 +185,7 @@ restartButton.addEventListener('click', () => {
     gameInterval = setInterval(gameLoop, 100);
 });
 
-// Touch control event listeners
+// Touch control event listeners with improved handling
 upButton.addEventListener('touchstart', e => {
     e.preventDefault();
     if (velocity.y === 1) return;
@@ -229,3 +232,4 @@ window.addEventListener('resize', () => {
         draw();
     }
 });
+</create_file>
