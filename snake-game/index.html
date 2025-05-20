@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Snake Game - Nokia Style</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <h1>Snake Game - Nokia Style</h1>
+    <div id="playerNameContainer">
+        <label for="playerNameInput">Digite seu nome:</label>
+        <input type="text" id="playerNameInput" placeholder="Seu nome" />
+        <button id="confirmNameButton">Confirmar</button>
+    </div>
+    <canvas id="gameCanvas" width="400" height="400" style="display:none;"></canvas>
+    <div id="controls" style="display:none;">
+        <button id="startButton">INICIAR</button>
+        <button id="restartButton" style="display:none;">INICIAR NOVAMENTE</button>
+        <div id="scoreContainer" style="display:none;">
+            Pontuação: <span id="score">0</span>
+        </div>
+    </div>
+    <div id="leaderboardContainer" style="display:none;">
+        <h2>Ranking</h2>
+        <ol id="leaderboardList"></ol>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
