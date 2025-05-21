@@ -1,3 +1,5 @@
+// Responsive canvas sizing and touch controls for mobile
+
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -32,12 +34,8 @@ let gameInterval = null;
 let playerName = '';
 
 function resizeCanvas() {
-    const maxWidth = window.innerWidth * 0.9;
-    const minSize = 200;
-    const maxSize = 400;
-    let size = Math.floor(maxWidth / gridSize) * gridSize;
-    if (size < minSize) size = minSize;
-    if (size > maxSize) size = maxSize;
+    const maxWidth = Math.min(window.innerWidth * 0.9, 400);
+    const size = Math.floor(maxWidth / gridSize) * gridSize;
     canvas.width = size;
     canvas.height = size;
     tileCount = size / gridSize;
@@ -107,12 +105,12 @@ function draw() {
     ctx.fillStyle = '#e9ecef';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = '#4caf50';
+    ctx.fillStyle = '#4caf50'; // softer green for snake
     for (let segment of snake) {
         ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 2, gridSize - 2);
     }
 
-    ctx.fillStyle = '#ff5722';
+    ctx.fillStyle = '#ff5722'; // softer orange-red for food
     ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
 }
 
@@ -161,6 +159,7 @@ confirmNameButton.addEventListener('click', () => {
     document.getElementById('controls').style.display = 'flex';
     leaderboardContainer.style.display = 'block';
 
+    // Show touch controls on mobile
     if (/Mobi|Android/i.test(navigator.userAgent)) {
         touchControls.style.display = 'flex';
     }
@@ -183,24 +182,22 @@ restartButton.addEventListener('click', () => {
     gameInterval = setInterval(gameLoop, 100);
 });
 
+// Touch control event listeners
 upButton.addEventListener('touchstart', e => {
     e.preventDefault();
     if (velocity.y === 1) return;
     velocity = { x: 0, y: -1 };
 });
-
 downButton.addEventListener('touchstart', e => {
     e.preventDefault();
     if (velocity.y === -1) return;
     velocity = { x: 0, y: 1 };
 });
-
 leftButton.addEventListener('touchstart', e => {
     e.preventDefault();
     if (velocity.x === 1) return;
     velocity = { x: -1, y: 0 };
 });
-
 rightButton.addEventListener('touchstart', e => {
     e.preventDefault();
     if (velocity.x === -1) return;
@@ -212,7 +209,7 @@ function saveScore() {
     let leaderboard = JSON.parse(localStorage.getItem('snakeLeaderboard')) || [];
     leaderboard.push({ name: playerName, score: score });
     leaderboard.sort((a, b) => b.score - a.score);
-    leaderboard = leaderboard.slice(0, 10);
+    leaderboard = leaderboard.slice(0, 10); // keep top 10
     localStorage.setItem('snakeLeaderboard', JSON.stringify(leaderboard));
 }
 
@@ -232,4 +229,3 @@ window.addEventListener('resize', () => {
         draw();
     }
 });
-</create_file>
